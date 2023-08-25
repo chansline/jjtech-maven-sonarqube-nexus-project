@@ -1,0 +1,47 @@
+pipeline{
+    
+    agent {
+  docker {
+    image 'maven:3.8.6-openjdk-11'
+  }
+}
+
+stages {
+  stage('Echo hello world') {
+    steps {
+      sh 'echo "hello world"'
+    }
+  }
+ 
+  stage('git checkout') {
+    steps {
+        echo 'cloning java source code from github'
+     git branch: 'main', credentialsId: 'git-creadentials', url: 'https://github.com/chansline/jjtech-maven-sonarqube-nexus-project.git'
+    }
+  }
+  
+   stage('test') {
+    steps {
+      dir('JavaWebApp') {
+      sh 'mvn test'
+      }
+    }
+  }
+  
+  stage('Approval') {
+    steps {
+      input 'please validate and then  click on proceed'
+    }
+  }
+   stage('build') {
+    steps {
+      dir('JavaWebApp') {
+      sh 'mvn clean install'
+      }
+    }
+  }
+
+}
+
+
+}
